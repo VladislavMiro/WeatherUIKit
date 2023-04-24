@@ -17,8 +17,7 @@ final class AppCoordinator: CoordinatorProtocol {
     }
     
     public func start() {
-        let mainView = UIViewController()
-        mainView.view.backgroundColor = .white
+        let mainView = MainView()
         window.rootViewController = mainView
         window.makeKeyAndVisible()
     }
