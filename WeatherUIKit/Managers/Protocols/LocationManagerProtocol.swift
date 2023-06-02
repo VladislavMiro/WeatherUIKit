@@ -10,6 +10,6 @@ import Combine
 import CoreLocation
 
 protocol LocationManagerProtocol {
-    var location: PassthroughSubject<CLLocationCoordinate2D, CLError> { get }
+    var location: PassthroughSubject<CLLocationCoordinate2D, Error> { get }
     func requestLocation()
 }

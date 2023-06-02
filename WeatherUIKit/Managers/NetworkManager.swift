@@ -57,7 +57,7 @@ final class NetworkManager: NetworkManagerProtocol {
             default:
                 throw URLError(.badServerResponse)
             }
-        }.eraseToAnyPublisher()
+            }.eraseToAnyPublisher()
     }
     
     

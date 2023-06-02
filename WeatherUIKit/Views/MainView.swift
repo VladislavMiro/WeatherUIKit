@@ -7,6 +7,7 @@
 
 import UIKit
 import MapKit
+import Combine
 
 final class MainView: UIViewController {
     
@@ -15,6 +16,18 @@ final class MainView: UIViewController {
     private let forecastList = ForecastListView()
     private let map = MKMapView()
     private let scrollView = UIScrollView()
+    private var cancellable = Set<AnyCancellable>()
+    private var viewModel: MainViewModel
+
+    
+    init(viewModel: MainViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
@@ -24,6 +37,20 @@ final class MainView: UIViewController {
         super.viewDidLoad()
         configureView()
         configureConstraints()
+        viewModel.requestWeather()
+        viewModel.weather.sink { (completion) in
+            switch completion {
+            case .finished:
+                break
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        } receiveValue: { [unowned self] data in
+            print(data)
+            self.header.data = data.headerOutputModel
+            
+        }.store(in: &cancellable)
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,9 +66,7 @@ final class MainView: UIViewController {
         
         header = HeaderView(frame: .init(x: 0, y: 0,
                                          width: self.view.bounds.width,
-                                         height: 160),
-                            cityName: "Paris",
-                            date: "12 September, Sunday")
+                                         height: 160))
         section = WeatherDataSection(frame: .init(x: 0, y: 0,
                                                   width: self.view.bounds.width,
                                                   height: 100),

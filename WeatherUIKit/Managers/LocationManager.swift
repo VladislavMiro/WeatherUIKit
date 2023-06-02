@@ -11,7 +11,7 @@ import CoreLocation
 
 final class LocationManager: NSObject, LocationManagerProtocol {
     
-    private(set) var location: PassthroughSubject<CLLocationCoordinate2D, CLError> = .init()
+    private(set) var location: PassthroughSubject<CLLocationCoordinate2D, Error> = .init()
     private var cancellable: Set<AnyCancellable> = .init()
     private let manager: CLLocationManager = .init()
     
@@ -19,10 +19,12 @@ final class LocationManager: NSObject, LocationManagerProtocol {
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.allowsBackgroundLocationUpdates = false
     }
     
     public func requestLocation() {
         manager.requestAlwaysAuthorization()
+        manager.requestWhenInUseAuthorization()
     }
 }
 
@@ -37,6 +39,7 @@ extension LocationManager: CLLocationManagerDelegate {
             location.send(completion: .failure(error))
             manager.stopUpdatingLocation()
         default:
+            manager.stopUpdatingLocation()
             break
         }
     }
@@ -44,6 +47,7 @@ extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.first else { let error = CLError(.locationUnknown)
             self.location.send(completion: .failure(error))
+            manager.stopUpdatingLocation()
             return
         }
         
@@ -51,5 +55,9 @@ extension LocationManager: CLLocationManagerDelegate {
         manager.stopUpdatingLocation()
     }
     
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        manager.stopUpdatingLocation()
+        self.location.send(completion: .failure(error))
+    }
     
 }

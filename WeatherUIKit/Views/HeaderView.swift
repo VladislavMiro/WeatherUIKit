@@ -6,11 +6,16 @@
 //
 
 import UIKit
+import Combine
 
 final class HeaderView: UIView {
     
-    private var cityName: String
-    private var date: String
+    public var data = MainViewModelOutputModels.HeaderModel() {
+        didSet {
+            setData()
+        }
+    }
+    public var isDay: Bool = true
     
     private let cityLabel = UILabel()
     private let dateLabel = UILabel()
@@ -21,20 +26,24 @@ final class HeaderView: UIView {
     private let weatherDataStack = UIStackView()
     private let image = UIImageView()
     
-    init(frame: CGRect, cityName: String, date: String) {
-        self.cityName = cityName
-        self.date = date
+    override init(frame: CGRect) {
         super.init(frame: frame)
         configureLabels()
         configureImage()
     }
     
     required init?(coder: NSCoder) {
-        cityName = ""
-        date = ""
         super.init(coder: coder)
         configureLabels()
         configureImage()
+    }
+    
+    private func setData() {
+        cityLabel.text = data.cityName
+        dateLabel.text = data.date
+        weatherLabel.text = data.temp
+        statementLabel.text = data.condition
+        image.image = UIImage(named: data.icon)
     }
     
     override func layoutSubviews() {
@@ -55,22 +64,19 @@ final class HeaderView: UIView {
     }
     
     private func configureLabels() {
-        cityLabel.text = cityName
+
         cityLabel.textAlignment = .left
         cityLabel.textColor = .white
         cityLabel.font = UIFont(name: Resources.Fonts.RussoOneRegular, size: 24)
         
-        dateLabel.text = date
         dateLabel.textAlignment = .left
         dateLabel.textColor = .lightGray
         dateLabel.font = .systemFont(ofSize: 12, weight: .light)
         
-        weatherLabel.text = "18º"
         weatherLabel.textAlignment = .left
         weatherLabel.textColor = .white
         weatherLabel.font = UIFont(name: Resources.Fonts.RussoOneRegular, size: 56)
         
-        statementLabel.text = "Thundertorm"
         statementLabel.textAlignment = .left
         statementLabel.textColor = .lightGray
         statementLabel.font = .systemFont(ofSize: 12, weight: .light)
@@ -93,10 +99,8 @@ final class HeaderView: UIView {
     
     private func configureImage() {
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = UIImage(systemName: "cloud.fill")
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFill
         
         self.addSubview(image)
     }
-
 }
