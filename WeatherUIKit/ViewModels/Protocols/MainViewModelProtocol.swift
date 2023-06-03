@@ -9,6 +9,6 @@ import Foundation
 import Combine
 
 protocol MainViewModelProtocol: class {
-    var weather: PassthroughSubject<MainViewModelOutputModels.WeatherModel, Error> { get }
+    var weather: MainViewModelOutputModels.WeatherModel { get }
     func requestWeather()
 }

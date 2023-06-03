@@ -10,16 +10,18 @@ import Combine
 import MapKit
 
 final class MainViewModel: ObservableObject, MainViewModelProtocol {
-    
-    private let networkManager: NetworkManagerProtocol
+
+    private let  networkManager: NetworkManagerProtocol
     private let locationManager: LocationManagerProtocol
     private var cancellabe = Set<AnyCancellable>()
     
-    @Published private(set) var weather = PassthroughSubject<MainViewModelOutputModels.WeatherModel, Error>()
+    @Published private(set) var weather: MainViewModelOutputModels.WeatherModel
+    @Published private(set) var errorMessage: String = ""
     
     init(networkManager: NetworkManagerProtocol, locationManager: LocationManagerProtocol) {
         self.networkManager = networkManager
         self.locationManager = locationManager
+        weather = .init(headerOutputModel: .init(), weatherDataSectionModel: .init(), forecast: .init())
         locationManagerBind()
     }
     
@@ -27,7 +29,10 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
         locationManager
             .location
             .sink { [unowned self]  completion in
-                self.weather.send(completion: completion)
+                switch completion {
+                case .failure(let error): self.errorMessage = error.localizedDescription
+                default: break
+                }
             } receiveValue: { [unowned self] coordinations in
                 let coord = (lat: Float(coordinations.latitude), long: Float(coordinations.longitude))
                 self.networkManager
@@ -37,16 +42,14 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
                         let data = self.formatOutputData(weather: weather, coordinations: coordinations)
                         return data
                     }
-                    .mapError({ (error) -> Error in
-                        return error
-                    })
-                    .eraseToAnyPublisher()
                     .sink { [unowned self] (completion) in
-                        self.weather.send(completion: completion)
+                        switch completion {
+                        case .failure(let error): self.errorMessage = error.description
+                        default: break
+                        }
                     } receiveValue: { [unowned self] (data) in
-                        self.weather.send(data)
+                        self.weather = data
                     }.store(in: &cancellabe)
-
             }.store(in: &cancellabe)
     }
     

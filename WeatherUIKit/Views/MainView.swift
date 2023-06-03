@@ -45,20 +45,20 @@ final class MainView: UIViewController {
     }
     
     private func bind() {
-        viewModel.weather.sink { [unowned self] (completion) in
-            switch completion {
-            case .finished:
-                break
-            case .failure(let error):
-                self.showAlert(message: error.localizedDescription)
-            }
-        } receiveValue: { [unowned self] data in
-            print("data", data)
-            self.header.data = data.headerOutputModel
+        
+        viewModel.$weather.sink(receiveValue: { data in
+            self.header.data =  data.headerOutputModel
             self.section.data = data.weatherDataSectionModel
             self.forecastList.data = data.forecast
             self.map.setRegion(data.location, animated: true)
+            self.scrollView.refreshControl?.endRefreshing()
+        }).store(in: &cancellable)
+        
+        viewModel.$errorMessage.sink { error in
+            self.showAlert(message: error)
+            self.scrollView.refreshControl?.endRefreshing()
         }.store(in: &cancellable)
+
     }
     
     private func configureView() {
@@ -127,7 +127,6 @@ final class MainView: UIViewController {
     
     @objc private func refreshData() {
         self.viewModel.requestWeather()
-        self.scrollView.refreshControl?.endRefreshing()
     }
     
     private func showAlert(message: String) {
