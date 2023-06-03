@@ -38,12 +38,21 @@ final class MainView: UIViewController {
         configureView()
         configureConstraints()
         viewModel.requestWeather()
-        viewModel.weather.sink { (completion) in
+        bind()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setNeedsStatusBarAppearanceUpdate()
+    }
+    
+    private func bind() {
+        viewModel.weather.sink { [unowned self] (completion) in
             switch completion {
             case .finished:
                 break
             case .failure(let error):
-                print(error.localizedDescription)
+                self.showAlert(message: error.localizedDescription)
             }
         } receiveValue: { [unowned self] data in
             print(data)
@@ -52,12 +61,6 @@ final class MainView: UIViewController {
             self.forecastList.data = data.forecast
             self.map.setRegion(data.location, animated: true)
         }.store(in: &cancellable)
-
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setNeedsStatusBarAppearanceUpdate()
     }
     
     private func configureView() {
@@ -119,5 +122,11 @@ final class MainView: UIViewController {
             map.heightAnchor.constraint(equalToConstant: 200),
             map.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -20)
         ])
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(.init(title: "Ok", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 }
