@@ -58,15 +58,30 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
     }
     
     private func formatOutputData(weather: WeatherProtocol) -> MainViewModelOutputModels.WeatherModel {
-        return .init(headerOutputModel:
-                        .init(cityName: weather.location.name,
-                              date: self.formatDate(date: weather.location.localTime, format: "d MMMM, EEEE"),
-                              condition: weather.current.condition.text,
-                              temp: String(Int(weather.current.tempC)) + "°",
-                              icon: (weather.current.isDay ? "Day" : "night") + weather.current.condition.icon),
-                      weatherDataSectionModel: .init(windData: String(Int(weather.current.windKph)) + " K/H",
-                                                     humidityData: String(weather.current.humidity) + " %",
-                                                     cloudData: String(weather.current.cloud) + " %"))
+        let header = MainViewModelOutputModels.HeaderModel(cityName: weather.location.name,
+                                                           date: self.formatDate(date: weather.location.localTime, format: "d MMMM, EEEE"),
+                                                           condition: weather.current.condition.text,
+                                                           temp: String(Int(weather.current.tempC)) + "°",
+                                                           icon: (weather.current.isDay ? "Day" : "night") + weather.current.condition.icon)
+        let section = MainViewModelOutputModels.WeatherDataSectionModel(windData: String(Int(weather.current.windKph)) + " K/H",
+                                                                        humidityData: String(weather.current.humidity) + " %",
+                                                                        cloudData: String(weather.current.cloud) + " %")
+        
+        let forecast = MainViewModelOutputModels.Forecasts(forecaastOnWeek: weather.forecast.map({ data -> MainViewModelOutputModels.ForecastModel in
+            return .init(date: formatDate(date: data.date, format: "E"),
+                         temp: String(data.day.maxTempC) + "°",
+                         icon: "Day\(data.day.condition.icon)")
+        }), forecastByHour: weather.forecast
+            .first?
+            .hour
+            .map({ item -> MainViewModelOutputModels.ForecastModel in
+            return .init(date: formatDate(date: item.time, format: "HH:mm"),
+                         temp: String(item.tempC) + "°",
+                         icon: (item.isDay ? "Day" : "night") + item.condition.icon)
+        }) ?? []
+        )
+        
+        return .init(headerOutputModel: header, weatherDataSectionModel: section, forecast: forecast)
     }
     
     private func formatDate(date: Date, format: String) -> String {

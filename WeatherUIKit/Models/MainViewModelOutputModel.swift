@@ -23,8 +23,20 @@ enum MainViewModelOutputModels {
         public var cloudData: String = "0 %"
     }
     
+    struct ForecastModel {
+        public var date: String = ""
+        public var temp: String = ""
+        public var icon: String = ""
+    }
+    
+    struct Forecasts {
+        public var forecaastOnWeek: [ForecastModel] = []
+        public var forecastByHour: [ForecastModel] = []
+    }
+    
     struct WeatherModel {
         public var headerOutputModel: HeaderModel
         public var weatherDataSectionModel: WeatherDataSectionModel
+        public var forecast: Forecasts
     }
 }

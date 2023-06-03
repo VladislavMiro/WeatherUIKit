@@ -47,19 +47,16 @@ final class ForecastCell: UICollectionViewCell {
     }
     
     private func configureLabel() {
-        timeLabel.text = "12 am"
         timeLabel.textColor = .lightGray
         timeLabel.font = UIFont(name: Resources.Fonts.RussoOneRegular, size: 12)
         timeLabel.numberOfLines = 1
         
-        dataLabel.text = "16º"
         dataLabel.textColor = .white
         dataLabel.font = UIFont(name: Resources.Fonts.RussoOneRegular, size: 12)
         dataLabel.numberOfLines = 1
     }
     
     private func configureImageView() {
-        image.image = UIImage(systemName: "cloud.fill")
         image.contentMode = .scaleAspectFill
     }
     
@@ -74,6 +71,12 @@ final class ForecastCell: UICollectionViewCell {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         self.contentView.addSubview(stackView)
+    }
+    
+    public func setData(time: String = "", data: String = "", icon: String = "") {
+        timeLabel.text = time
+        dataLabel.text = data
+        image.image = UIImage(named: icon)
     }
     
 }

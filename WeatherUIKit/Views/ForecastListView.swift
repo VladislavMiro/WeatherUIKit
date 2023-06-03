@@ -12,6 +12,12 @@ final class ForecastListView: UIView {
     private var forecastList: UICollectionView!
     private var segmentedControl: SegmentedControl!
     
+    public var data: MainViewModelOutputModels.Forecasts = .init() {
+        didSet {
+            forecastList.reloadData()
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureSegmentedControl()
@@ -77,9 +83,9 @@ extension ForecastListView: UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            return 9
+            return data.forecaastOnWeek.count
         case 1:
-            return 4
+            return data.forecastByHour.count
         default:
             return 0
         }
@@ -89,6 +95,19 @@ extension ForecastListView: UICollectionViewDataSource, UICollectionViewDelegate
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = forecastList.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? ForecastCell else { return UICollectionViewCell() }
+        
+        
+        switch segmentedControl.selectedSegmentIndex {
+        case 0:
+            let item = data.forecaastOnWeek[indexPath.row]
+            cell.setData(time: item.date, data: item.temp, icon: item.icon)
+        case 1:
+            let item = data.forecastByHour[indexPath.row]
+            cell.setData(time: item.date, data: item.temp, icon: item.icon)
+        default:
+            return cell
+        }
+        
         return cell
     }
     

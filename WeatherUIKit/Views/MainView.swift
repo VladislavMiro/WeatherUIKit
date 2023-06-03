@@ -49,6 +49,7 @@ final class MainView: UIViewController {
             print(data)
             self.header.data = data.headerOutputModel
             self.section.data = data.weatherDataSectionModel
+            self.forecastList.data = data.forecast
         }.store(in: &cancellable)
 
     }
