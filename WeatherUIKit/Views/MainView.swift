@@ -48,7 +48,7 @@ final class MainView: UIViewController {
         } receiveValue: { [unowned self] data in
             print(data)
             self.header.data = data.headerOutputModel
-            
+            self.section.data = data.weatherDataSectionModel
         }.store(in: &cancellable)
 
     }

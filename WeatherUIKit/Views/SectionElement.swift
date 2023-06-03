@@ -10,14 +10,32 @@ import UIKit
 final class SectionElement: UIView {
     
     private let imageView = UIImageView()
-    private let label = UILabel()
+    private let sectionLabel = UILabel()
     private let dataLabel = UILabel()
     private let stackView = UIStackView()
+    
+    public var data: String = "" {
+        didSet {
+            dataLabel.text = data
+        }
+    }
+    
+    public var image: UIImage = .init() {
+        didSet {
+            imageView.image = image
+        }
+    }
+    
+    public var label: String = "" {
+        didSet {
+            sectionLabel.text = label
+        }
+    }
     
     init(frame: CGRect, label: String = "", data: String = "", image: UIImage? = .init()) {
         super.init(frame: frame)
         
-        self.label.text = label
+        self.sectionLabel.text = label
         self.dataLabel.text = data
         self.imageView.image = image
         
@@ -47,9 +65,9 @@ final class SectionElement: UIView {
         dataLabel.font = .systemFont(ofSize: 14)
         dataLabel.textAlignment = .center
         
-        label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 12)
-        label.textAlignment = .center
+        sectionLabel.textColor = .lightGray
+        sectionLabel.font = .systemFont(ofSize: 12)
+        sectionLabel.textAlignment = .center
     }
     
     private func configureImage() {
@@ -65,7 +83,7 @@ final class SectionElement: UIView {
         
         stackView.addArrangedSubview(imageView)
         stackView.addArrangedSubview(dataLabel)
-        stackView.addArrangedSubview(label)
+        stackView.addArrangedSubview(sectionLabel)
 
         addSubview(stackView)
     }

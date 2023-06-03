@@ -15,7 +15,6 @@ final class HeaderView: UIView {
             setData()
         }
     }
-    public var isDay: Bool = true
     
     private let cityLabel = UILabel()
     private let dateLabel = UILabel()

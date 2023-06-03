@@ -36,15 +36,8 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
                 self.networkManager
                     .getWeather(latitude: coord.lat, longitude: coord.long)
                     .receive(on: DispatchQueue.main)
-                    .map { (weather) -> MainViewModelOutputModels.WeatherModel in
-                        let data = MainViewModelOutputModels
-                            .WeatherModel(headerOutputModel:
-                                            .init(cityName: weather.location.name,
-                                                  date: self.formatDate(date: weather.location.localTime, format: "d MMMM, EEEE"),
-                                                  condition: weather.current.condition.text,
-                                                  temp: String(Int(weather.current.tempC)) + "°",
-                                                  icon: (weather.current.isDay ? "Day" : "Night") + weather.current.condition.icon )
-                            )
+                    .map { [unowned self] (weather) -> MainViewModelOutputModels.WeatherModel in
+                        let data = self.formatOutputData(weather: weather)
                         return data
                     }
                     .mapError({ (error) -> Error in
@@ -60,8 +53,20 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
             }.store(in: &cancellabe)
     }
     
-    func requestWeather() {
+    public func requestWeather() {
         locationManager.requestLocation()
+    }
+    
+    private func formatOutputData(weather: WeatherProtocol) -> MainViewModelOutputModels.WeatherModel {
+        return .init(headerOutputModel:
+                        .init(cityName: weather.location.name,
+                              date: self.formatDate(date: weather.location.localTime, format: "d MMMM, EEEE"),
+                              condition: weather.current.condition.text,
+                              temp: String(Int(weather.current.tempC)) + "°",
+                              icon: (weather.current.isDay ? "Day" : "night") + weather.current.condition.icon),
+                      weatherDataSectionModel: .init(windData: String(Int(weather.current.windKph)) + " K/H",
+                                                     humidityData: String(weather.current.humidity) + " %",
+                                                     cloudData: String(weather.current.cloud) + " %"))
     }
     
     private func formatDate(date: Date, format: String) -> String {
