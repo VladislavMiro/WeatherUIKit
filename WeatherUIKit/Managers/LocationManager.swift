@@ -25,6 +25,7 @@ final class LocationManager: NSObject, LocationManagerProtocol {
     public func requestLocation() {
         manager.requestAlwaysAuthorization()
         manager.requestWhenInUseAuthorization()
+        manager.requestLocation()
     }
 }
 

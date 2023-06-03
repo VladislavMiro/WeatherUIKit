@@ -18,7 +18,6 @@ final class MainView: UIViewController {
     private let scrollView = UIScrollView()
     private var cancellable = Set<AnyCancellable>()
     private var viewModel: MainViewModel
-
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -37,7 +36,6 @@ final class MainView: UIViewController {
         super.viewDidLoad()
         configureView()
         configureConstraints()
-        viewModel.requestWeather()
         bind()
     }
     
@@ -55,7 +53,7 @@ final class MainView: UIViewController {
                 self.showAlert(message: error.localizedDescription)
             }
         } receiveValue: { [unowned self] data in
-            print(data)
+            print("data", data)
             self.header.data = data.headerOutputModel
             self.section.data = data.weatherDataSectionModel
             self.forecastList.data = data.forecast
@@ -68,6 +66,9 @@ final class MainView: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.isScrollEnabled = true
         scrollView.frame = UIScreen.main.bounds
+        scrollView.refreshControl = UIRefreshControl()
+        scrollView.refreshControl?.tintColor = .white
+        scrollView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         
         header = HeaderView(frame: .init(x: 0, y: 0,
                                          width: self.view.bounds.width,
@@ -124,9 +125,14 @@ final class MainView: UIViewController {
         ])
     }
     
+    @objc private func refreshData() {
+        self.viewModel.requestWeather()
+        self.scrollView.refreshControl?.endRefreshing()
+    }
+    
     private func showAlert(message: String) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(.init(title: "Ok", style: .cancel, handler: nil))
+        alert.addAction(.init(title: "OK", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 }
