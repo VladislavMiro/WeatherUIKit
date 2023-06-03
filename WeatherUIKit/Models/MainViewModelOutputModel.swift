@@ -14,19 +14,19 @@ enum MainViewModelOutputModels {
         public var cityName: String = "--"
         public var date: String = "--"
         public var condition: String = "--"
-        public var temp: String = "0"
+        public var temp: String = "0" + Resources.Symbols.celcius
         public var icon: String = "Day113"
     }
     
     struct WeatherDataSectionModel {
-        public var windData: String = "0 K/H"
-        public var humidityData: String = "0 %"
-        public var cloudData: String = "0 %"
+        public var windData: String = "0" + Resources.Symbols.precent
+        public var humidityData: String = "0" + Resources.Symbols.precent
+        public var cloudData: String = "0" + Resources.Symbols.precent
     }
     
     struct ForecastModel {
         public var date: String = ""
-        public var temp: String = ""
+        public var temp: String = "0" + Resources.Symbols.precent
         public var icon: String = ""
     }
     
