@@ -55,32 +55,42 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
     }
     
     private func formatOutputData(weather: WeatherProtocol, coordinations: CLLocationCoordinate2D) -> MainViewModelOutputModels.WeatherModel {
-        let header = MainViewModelOutputModels.HeaderModel(cityName: weather.location.name,
-                                                           date: self.formatDate(date: weather.location.localTime, format: "d MMMM, EEEE"),
-                                                           condition: weather.current.condition.text,
-                                                           temp: String(Int(weather.current.tempC)) + "°",
-                                                           icon: (weather.current.isDay ? "Day" : "night") + weather.current.condition.icon)
-        let section = MainViewModelOutputModels.WeatherDataSectionModel(windData: String(Int(weather.current.windKph)) + " K/H",
-                                                                        humidityData: String(weather.current.humidity) + " %",
-                                                                        cloudData: String(weather.current.cloud) + " %")
-        
-        let forecast = MainViewModelOutputModels.Forecasts(forecaastOnWeek: weather.forecast.map({ data -> MainViewModelOutputModels.ForecastModel in
-            return .init(date: formatDate(date: data.date, format: "E"),
-                         temp: String(data.day.maxTempC) + "°",
+        let header = createHeaderDataModel(weather: weather)
+        let section = createSectionDataModel(weather: weather)
+        let forecast = createForecastsDataModel(weather: weather)
+        let region = MKCoordinateRegion(center: coordinations, latitudinalMeters: 1000, longitudinalMeters: 1000)
+
+        return .init(headerOutputModel: header, weatherDataSectionModel: section, forecast: forecast, location: region)
+    }
+    
+    private func createHeaderDataModel(weather: WeatherProtocol) -> MainViewModelOutputModels.HeaderModel {
+        return .init(cityName: weather.location.name,
+                     date: self.formatDate(date: weather.location.localTime, format: Resources.DateFormats.dayFullMonthNameFullDayName),
+                     condition: weather.current.condition.text,
+                     temp: String(Int(weather.current.tempC)) + Resources.Symbols.celcius,
+                     icon: (weather.current.isDay ? "Day" : "night") + weather.current.condition.icon)
+    }
+    
+    private func createSectionDataModel(weather: WeatherProtocol) -> MainViewModelOutputModels.WeatherDataSectionModel {
+        return .init(windData: String(Int(weather.current.windKph)) + Resources.Symbols.khSpeed,
+                     humidityData: String(weather.current.humidity) + Resources.Symbols.precent,
+                     cloudData: String(weather.current.cloud) + Resources.Symbols.precent)
+    }
+    
+    private func createForecastsDataModel(weather: WeatherProtocol) -> MainViewModelOutputModels.Forecasts {
+        return .init(forecaastOnWeek: weather.forecast.map({ data -> MainViewModelOutputModels.ForecastModel in
+            return .init(date: formatDate(date: data.date, format: Resources.DateFormats.oneNumberOfWeekDay),
+                         temp: String(data.day.maxTempC) + Resources.Symbols.celcius,
                          icon: "Day\(data.day.condition.icon)")
         }), forecastByHour: weather.forecast
             .first?
             .hour
             .map({ item -> MainViewModelOutputModels.ForecastModel in
-            return .init(date: formatDate(date: item.time, format: "HH:mm"),
-                         temp: String(item.tempC) + "°",
+                return .init(date: formatDate(date: item.time, format: Resources.DateFormats.twoNumbersOfHoursAndMinutes),
+                             temp: String(item.tempC) + Resources.Symbols.celcius,
                          icon: (item.isDay ? "Day" : "night") + item.condition.icon)
         }) ?? []
         )
-        
-        let region = MKCoordinateRegion(center: coordinations, latitudinalMeters: 1000, longitudinalMeters: 1000)
-
-        return .init(headerOutputModel: header, weatherDataSectionModel: section, forecast: forecast, location: region)
     }
     
     private func formatDate(date: Date, format: String) -> String {
