@@ -50,6 +50,7 @@ final class MainView: UIViewController {
             self.header.data = data.headerOutputModel
             self.section.data = data.weatherDataSectionModel
             self.forecastList.data = data.forecast
+            self.map.setRegion(data.location, animated: true)
         }.store(in: &cancellable)
 
     }
@@ -70,12 +71,10 @@ final class MainView: UIViewController {
                                          height: 160))
         section = WeatherDataSection(frame: .init(x: 0, y: 0,
                                                   width: self.view.bounds.width,
-                                                  height: 100),
-                                     windData: "130 m/s",
-                                     humidityData: "35 %",
-                                     cloudData: "20 %")
+                                                  height: 100))
         
         map.layer.cornerRadius = 15
+        map.mapType = .standard
         
         forecastList.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200)
 

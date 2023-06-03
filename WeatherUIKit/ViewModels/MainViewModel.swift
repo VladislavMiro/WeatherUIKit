@@ -26,18 +26,15 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
     public func locationManagerBind() {
         locationManager
             .location
-            .map({ location -> (lat: Float, long: Float) in
-                return (Float(location.latitude), Float(location.longitude))
-            })
-            .eraseToAnyPublisher()
             .sink { [unowned self]  completion in
                 self.weather.send(completion: completion)
-            } receiveValue: { [unowned self] coord in
+            } receiveValue: { [unowned self] coordinations in
+                let coord = (lat: Float(coordinations.latitude), long: Float(coordinations.longitude))
                 self.networkManager
                     .getWeather(latitude: coord.lat, longitude: coord.long)
                     .receive(on: DispatchQueue.main)
                     .map { [unowned self] (weather) -> MainViewModelOutputModels.WeatherModel in
-                        let data = self.formatOutputData(weather: weather)
+                        let data = self.formatOutputData(weather: weather, coordinations: coordinations)
                         return data
                     }
                     .mapError({ (error) -> Error in
@@ -57,7 +54,7 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
         locationManager.requestLocation()
     }
     
-    private func formatOutputData(weather: WeatherProtocol) -> MainViewModelOutputModels.WeatherModel {
+    private func formatOutputData(weather: WeatherProtocol, coordinations: CLLocationCoordinate2D) -> MainViewModelOutputModels.WeatherModel {
         let header = MainViewModelOutputModels.HeaderModel(cityName: weather.location.name,
                                                            date: self.formatDate(date: weather.location.localTime, format: "d MMMM, EEEE"),
                                                            condition: weather.current.condition.text,
@@ -81,7 +78,9 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
         }) ?? []
         )
         
-        return .init(headerOutputModel: header, weatherDataSectionModel: section, forecast: forecast)
+        let region = MKCoordinateRegion(center: coordinations, latitudinalMeters: 1000, longitudinalMeters: 1000)
+
+        return .init(headerOutputModel: header, weatherDataSectionModel: section, forecast: forecast, location: region)
     }
     
     private func formatDate(date: Date, format: String) -> String {

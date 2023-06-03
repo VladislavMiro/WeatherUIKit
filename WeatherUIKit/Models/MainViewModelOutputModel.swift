@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MapKit
 
 enum MainViewModelOutputModels {
     
@@ -38,5 +39,6 @@ enum MainViewModelOutputModels {
         public var headerOutputModel: HeaderModel
         public var weatherDataSectionModel: WeatherDataSectionModel
         public var forecast: Forecasts
+        public var location: MKCoordinateRegion = .init()
     }
 }

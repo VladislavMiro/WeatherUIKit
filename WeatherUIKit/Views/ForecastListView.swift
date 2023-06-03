@@ -91,11 +91,8 @@ extension ForecastListView: UICollectionViewDataSource, UICollectionViewDelegate
         }
     }
     
-    
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = forecastList.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? ForecastCell else { return UICollectionViewCell() }
-        
         
         switch segmentedControl.selectedSegmentIndex {
         case 0:
