@@ -8,7 +8,7 @@ Application can show:
 - Hummidity by precent
 - Forecast on week
 - Forecast by hour
-- City on map by user location
+- User location on map
 
 ## Screenshots:
 
@@ -21,6 +21,8 @@ Application can show:
 - MVVM + Coordinator
 - Dependency Injection
 - SOLID
+- CoreAnimation
+- MapKit & CoreLocation
 - Reactive Programming (Combine) 
 ## 🔗 Links
 [![WeatherAPI Service](https://img.shields.io/badge/WeatherAPI%20Server-Link-green)](https://www.weatherapi.com)
