@@ -83,9 +83,9 @@ extension ForecastListView: UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            return data.forecaastOnWeek.count
+            return  data.forecastByHour.count
         case 1:
-            return data.forecastByHour.count
+            return data.forecaastOnWeek.count
         default:
             return 0
         }
@@ -96,10 +96,10 @@ extension ForecastListView: UICollectionViewDataSource, UICollectionViewDelegate
         
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            let item = data.forecaastOnWeek[indexPath.row]
+            let item = data.forecastByHour[indexPath.row]
             cell.setData(time: item.date, data: item.temp, icon: item.icon)
         case 1:
-            let item = data.forecastByHour[indexPath.row]
+            let item = data.forecaastOnWeek[indexPath.row]
             cell.setData(time: item.date, data: item.temp, icon: item.icon)
         default:
             return cell

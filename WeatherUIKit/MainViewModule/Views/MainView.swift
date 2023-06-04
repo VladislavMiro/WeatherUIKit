@@ -96,6 +96,7 @@ final class MainView: UIViewController {
     }
     
     private func configureConstraints() {
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
