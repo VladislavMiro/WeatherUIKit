@@ -64,7 +64,7 @@ enum MainViewModelOutputModels {
             self.forecaastOnWeek = data.map({ item -> ForecastModel in
                 return .init(date: self.formatDate(date: item.date,
                                                    format: Resources.DateFormats.oneNumberOfWeekDay),
-                             temp: String(item.day.maxTempC) + Resources.Symbols.celcius,
+                             temp: String(Int(item.day.maxTempC)) + Resources.Symbols.celcius,
                              icon: "Day\(item.day.condition.icon)")
             })
             

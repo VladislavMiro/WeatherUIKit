@@ -22,7 +22,6 @@ final class MainViewFactory: ModuleFactoryProtocol {
     public func createView() -> UIViewController {
         let viewModel = MainViewModel(networkManager: networkManager, locationManager: locationManager)
         let mainView = MainView(viewModel: viewModel)
-        
         return mainView
     }
     
