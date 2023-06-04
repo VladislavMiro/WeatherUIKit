@@ -8,7 +8,7 @@
 import UIKit
 
 final class ForecastListView: UIView {
-        
+    
     private var forecastList: UICollectionView!
     private var segmentedControl: SegmentedControl!
     
