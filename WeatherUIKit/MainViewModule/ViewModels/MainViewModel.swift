@@ -21,7 +21,7 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
     init(networkManager: NetworkManagerProtocol, locationManager: LocationManagerProtocol) {
         self.networkManager = networkManager
         self.locationManager = locationManager
-        weather = .init(headerOutputModel: .init(), weatherDataSectionModel: .init(), forecast: .init())
+        weather = .init()
         locationManagerBind()
     }
     
@@ -38,8 +38,9 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
                 self.networkManager
                     .getWeather(latitude: coord.lat, longitude: coord.long)
                     .receive(on: DispatchQueue.main)
-                    .map { [unowned self] (weather) -> MainViewModelOutputModels.WeatherModel in
-                        let data = self.formatOutputData(weather: weather, coordinations: coordinations)
+                    .map { weather -> MainViewModelOutputModels.WeatherModel in
+                        let region = MKCoordinateRegion(center: coordinations, latitudinalMeters: 1000, longitudinalMeters: 1000)
+                        let data = MainViewModelOutputModels.WeatherModel(data: weather, location: region)
                         return data
                     }
                     .sink { [unowned self] (completion) in
@@ -56,49 +57,5 @@ final class MainViewModel: ObservableObject, MainViewModelProtocol {
     public func requestWeather() {
         locationManager.requestLocation()
     }
-    
-    private func formatOutputData(weather: WeatherProtocol, coordinations: CLLocationCoordinate2D) -> MainViewModelOutputModels.WeatherModel {
-        let header = createHeaderDataModel(weather: weather)
-        let section = createSectionDataModel(weather: weather)
-        let forecast = createForecastsDataModel(weather: weather)
-        let region = MKCoordinateRegion(center: coordinations, latitudinalMeters: 1000, longitudinalMeters: 1000)
 
-        return .init(headerOutputModel: header, weatherDataSectionModel: section, forecast: forecast, location: region)
-    }
-    
-    private func createHeaderDataModel(weather: WeatherProtocol) -> MainViewModelOutputModels.HeaderModel {
-        return .init(cityName: weather.location.name,
-                     date: self.formatDate(date: weather.location.localTime, format: Resources.DateFormats.dayFullMonthNameFullDayName),
-                     condition: weather.current.condition.text,
-                     temp: String(Int(weather.current.tempC)) + Resources.Symbols.celcius,
-                     icon: (weather.current.isDay ? "Day" : "night") + weather.current.condition.icon)
-    }
-    
-    private func createSectionDataModel(weather: WeatherProtocol) -> MainViewModelOutputModels.WeatherDataSectionModel {
-        return .init(windData: String(Int(weather.current.windKph)) + Resources.Symbols.khSpeed,
-                     humidityData: String(weather.current.humidity) + Resources.Symbols.precent,
-                     cloudData: String(weather.current.cloud) + Resources.Symbols.precent)
-    }
-    
-    private func createForecastsDataModel(weather: WeatherProtocol) -> MainViewModelOutputModels.Forecasts {
-        return .init(forecaastOnWeek: weather.forecast.map({ data -> MainViewModelOutputModels.ForecastModel in
-            return .init(date: formatDate(date: data.date, format: Resources.DateFormats.oneNumberOfWeekDay),
-                         temp: String(data.day.maxTempC) + Resources.Symbols.celcius,
-                         icon: "Day\(data.day.condition.icon)")
-        }), forecastByHour: weather.forecast
-            .first?
-            .hour
-            .map({ item -> MainViewModelOutputModels.ForecastModel in
-                return .init(date: formatDate(date: item.time, format: Resources.DateFormats.twoNumbersOfHoursAndMinutes),
-                             temp: String(item.tempC) + Resources.Symbols.celcius,
-                         icon: (item.isDay ? "Day" : "night") + item.condition.icon)
-        }) ?? []
-        )
-    }
-    
-    private func formatDate(date: Date, format: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        return formatter.string(from: date)
-    }
 }
