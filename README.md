@@ -10,10 +10,6 @@ Application can show:
 - Forecast by hour
 - User location on map
 
-## Screenshots:
-
-![Screen2](Screen2.png) ![Screen1](Screen1.png) 
-
 ## Stack: 
 - UIkit
 - UI layout through code (UIKIt)
@@ -24,6 +20,11 @@ Application can show:
 - CoreAnimation
 - MapKit & CoreLocation
 - Reactive Programming (Combine) 
+
+## Screenshots:
+
+![Screen2](Screen2.png) ![Screen1](Screen1.png) 
+
 ## 🔗 Links
 [![WeatherAPI Service](https://img.shields.io/badge/WeatherAPI%20Server-Link-green)](https://www.weatherapi.com)
 
