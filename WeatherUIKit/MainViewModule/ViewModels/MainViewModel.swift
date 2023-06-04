@@ -10,8 +10,8 @@ import Combine
 import MapKit
 
 final class MainViewModel: ObservableObject, MainViewModelProtocol {
-
-    private let  networkManager: NetworkManagerProtocol
+    
+    private let networkManager: NetworkManagerProtocol
     private let locationManager: LocationManagerProtocol
     private var cancellabe = Set<AnyCancellable>()
     

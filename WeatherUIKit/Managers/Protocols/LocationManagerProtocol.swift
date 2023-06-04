@@ -13,3 +13,7 @@ protocol LocationManagerProtocol {
     var location: PassthroughSubject<CLLocationCoordinate2D, Error> { get }
     func requestLocation()
 }
+
+protocol DICLocationManager {
+    var locationManager: LocationManagerProtocol { get }
+}
