@@ -74,7 +74,7 @@ enum MainViewModelOutputModels {
                 .map({ item -> ForecastModel in
                     return.init(date: formatDate(date: item.time,
                                                  format: Resources.DateFormats.twoNumbersOfHoursAndMinutes),
-                                temp: String(item.tempC) + Resources.Symbols.celcius,
+                                temp: String(Int(item.tempC)) + Resources.Symbols.celcius,
                             icon: (item.isDay ? "Day" : "night") + item.condition.icon)
                 }) ?? []
         }
